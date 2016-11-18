@@ -9,15 +9,20 @@ from pronto import Ontology, Relationship
 import wget
 import gzip
 import os
+import os.path
 import  pandas as pd
+from .go_term import GOTerm
 
 class GOSnapshot(Ontology):
      """A snapshopt of the Gene Ontology for a given day.
      """
 
-     def __init__(self, date="2006-11-01"):
-        """
-        Intermmediate files are removed after usage.
+     def __init__(self, date="2006-11-01", cache=True):
+        """Create an ontology with the GO for the given day.
+        Intermediate files are removed after usage by default.
+
+        The cache parameter retains GO files for future use to avoid
+        downloading them again.
         """
         self._date = date
         #TODO: Extend to other filenames.
@@ -27,8 +32,8 @@ class GOSnapshot(Ontology):
             self.get_snapshot(self.date)
         if self.downloaded:
             super(GOSnapshot, self).__init__(self.filename + ".obo")
-            os.remove(self.filename + ".gz")
-            os.remove(self.filename + ".obo")
+            if not cache:
+                os.remove(self.filename + ".obo")
 
      def get_snapshot(self, date):
         """Loads a concrete snapshot of the GO.
@@ -43,6 +48,11 @@ class GOSnapshot(Ontology):
         #TODO: Before 2016-11 file names are different.
         filename = "gene_ontology_edit.obo.{DATE}".format(DATE=date)
         url = url + filename + ".gz"
+        # Try to find a local copy first (if it was cached):
+        if os.path.exists(filename+".obo"):
+            self.downloaded = True
+            return
+        # Try to download:
         try:
             wget.download(url)
             infile = gzip.GzipFile(filename + ".gz", 'rb')
@@ -53,9 +63,11 @@ class GOSnapshot(Ontology):
             outfile.write(s.decode('UTF-8', errors='replace').encode())
             outfile.close()
             self.downloaded = True
+            os.remove(self.filename + ".gz")
         except:
-            raise OSError('Ontology file {} could not be found'.format(filename))
             self.downloaded = False
+            raise OSError('Ontology file {} could not be found'.format(filename))
+
 
      @property
      def summary(self):
@@ -65,6 +77,14 @@ class GOSnapshot(Ontology):
      @property
      def date(self):
         return self._date
+
+
+     def getterm(self, item):
+        """Gets a GOTerm instance.
+        """
+        return GOTerm(self[item], self)
+
+
 
 class GOSnapshotSummary(object):
     """A summary of statistics from a GOSnapshot.
@@ -111,20 +131,15 @@ class GOSnapshotSummary(object):
     @property
     def ncelcomp(self):
         return self._ncelcomp
-
-
     @property
     def date(self):
         return self._date
-
     @property
     def nterms(self):
         return self._nterms
-
     @property
     def nchildren(self):
         return self._nchildren
-
     @property
     def nparents(self):
         return self._nparents

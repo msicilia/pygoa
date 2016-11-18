@@ -1,5 +1,6 @@
 from .go_snapshot import GOSnapshot, GOSnapshotSummary, to_df
 from .go_assoc_snapshot import GOAssocSnapshot, goass_to_df
+from .go_term import GOTerm
 
 
 __version__='0.0.1'

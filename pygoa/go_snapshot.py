@@ -79,10 +79,10 @@ class GOSnapshot(Ontology):
         return self._date
 
 
-     def getterm(self, item):
+     def term(self, item):
         """Gets a GOTerm instance.
         """
-        return GOTerm(self[item], self)
+        return GOTerm(item, self)
 
 
 

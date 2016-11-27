@@ -1,5 +1,6 @@
 *.obo
 *.gz
 *.pyc
+*.txt
 *checkpoint.ipynb
 .idea/

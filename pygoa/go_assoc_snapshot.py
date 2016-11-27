@@ -54,6 +54,7 @@ class GOAssocSnapshot(object):
             raise OSError('Summary file {} could not be found'.format(self.filename))
         pass
 
+
     @property
     def summary(self):
         """Returns a GOSnapshotSummary object, containing summary info.

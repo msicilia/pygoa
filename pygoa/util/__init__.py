@@ -1,4 +1,5 @@
 from .literature import get_doc_refs
+from .associations import download_assoc_database
 
 
 

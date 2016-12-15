@@ -65,8 +65,9 @@ class MRGOAFrecCounter(MRJob):
 
 
      def mapper_count_freq(self, _, data):
-         """Takes as input something as:
+         """Take as input something as:
          associd [go_term, is_none, date, db_id, evidence_code]
+         Maps GO term id to the rest of the data.
          """
          go_term = data[0]
          yield go_term, data[1:]

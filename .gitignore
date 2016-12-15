@@ -4,3 +4,5 @@
 *.txt
 *checkpoint.ipynb
 .idea/
+build/
+dist/
